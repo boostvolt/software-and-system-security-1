@@ -21,3 +21,10 @@
 
 ### Vulnerability
 **Mass Assignment**: API endpoints accept more parameters than intended, allowing unauthorized modification of object properties
+
+### Attack Steps
+
+1. **API Reconnaissance**: `/api/users` GET endpoint revealed user structure with `"role": "user"` attribute
+2. **Request Interception**: Used Burp Suite to intercept POST request to `/api/account` (profile update)
+3. **Parameter Injection**: Added `"role": "admin"` to profile update request via Burp Repeater
+4. **Privilege Escalation**: Application processed unauthorized parameter, escalating alice to admin
