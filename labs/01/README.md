@@ -51,7 +51,7 @@ But as i made the mistake at first, we need to specify that we use the Tor Socks
 `--socks5-hostname 127.0.0.1:9050` [inspired by](https://stackoverflow.com/questions/39257293/using-curl-with-tor-as-a-proxy-on-centos)
 
 ### Fail Safety
-The connection to the tor framework sometimes fails, which returns a 000 code. To mitigate this we retry a failed request once and if it fails twice we restart the tor service. This makes sure that every user get's tested correctly. 
+The connection to the tor framework sometimes fails, which returns a 000 code. To mitigate this we retry a failed request once and if it fails twice we restart the tor service. This makes sure that every user gets tested correctly. 
 ```bash
 #!/usr/bin/bash
 
