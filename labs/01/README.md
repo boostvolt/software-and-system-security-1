@@ -126,6 +126,13 @@ For Completeness there is also a file attached TerminalOut.txt where we logged t
 ### Conclusion
 The use of different Tor exit nodes, helps us to pass through the system restrictions set by the admin easily. It was an interesting lab. I also at first made the error that i made a script that didn't print out enough information. I also learned that we need to account for instability of our tools, for example my tor setup often failed to build up a connection in time. Which could easily be improved upon by just retrying or even restarting the Tor service.  
 
+Based upon this Terminal Output:
+```
+Testing user_140208:25c268ff -> code=200 time=0.296468s via=127.0.0.1:9050
+SUCCESS: user_140208:25c268ff
+```
+We know that *user_140208* matches the given password. 
+
 #### TerminalOutput.txt
 ```bash
 > sudo ./httpspray.sh '25c268ff'
