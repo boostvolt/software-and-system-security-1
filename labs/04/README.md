@@ -490,14 +490,6 @@ b'token=%22eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc1JldGFpbGVyIjpmYWxzZSwiX2lk
 - The JavaScript runs in the context of the web application, giving it access to localStorage
 - This is a **stored XSS** attack because the malicious SVG is permanently stored on the server
 
-## Remediation
-
-- **Sanitize SVG uploads**: Strip all `<script>` tags and event handlers from uploaded SVG files
-- **Content-Security-Policy**: Set `script-src 'self'` to prevent inline scripts
-- **Validate file content**: Don't just check file extensions; parse and validate SVG structure
-- **Use httpOnly cookies**: Store tokens in httpOnly cookies instead of localStorage
-- **Serve user content from separate domain**: Host user-uploaded files on a different domain to prevent same-origin access
-
 # 7 SCHOGGI: Cross-Site Scripting (XSS) Level 2
 
 ## Attack Overview
