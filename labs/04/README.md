@@ -1,77 +1,20 @@
 # 1 Command Injection 
-I don't really know if it was intentionally but the website only showed a waiting screen with the following http response:
-```html
-<html>
+## Vulnerabilities
 
-<style>
-#loading{
-  position: fixed;
-  display: block;
-  width: 300px;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-}
-.message {
-  text-align: center;
-}
-.spinner {
-  left: calc(50% - 60px - 8px - 8px);
-  border: 16px solid #f3f3f3; /* Light grey */
-  border-top: 16px solid #3498db; /* Blue */
-  border-radius: 50%;
-  width: 120px;
-  height: 120px;
-  animation: spin 2s linear infinite;
-}
-.rel {
-  position: relative;
-}
+1. **Command Injection:** Pinger functionality executes system commands without input sanitization
+2. **Information Disclosure:** Application files and environment variables accessible through command injection
 
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-</style>
+## Attack Steps
 
-<div id="loading">
-  <div class="spinner rel">
-  </div>
-  <div class="message rel">
-    <p>
-    Loading, please wait ...
-    </p>
-  </div>
-</div>
+1. **Vulnerability Discovery:** Input `127.0.0.1; ls` confirmed command injection by executing both ping and ls commands
+2. **Reconnaissance:** Used `127.0.0.1 && cat Readme.md` to analyze application documentation
+3. **Intelligence Gathering:** Readme.md revealed key hint about "environment based dynamic ctf flag handling in `/etc/cont-init-d/99-add-flag.sh`"
+4. **Flag Extraction:** `127.0.0.1 && env | grep -i flag` searched environment variables and extracted the flag
 
-<script type="text/javascript">
-var pingUrl = window.location.href;
+## Flag
 
-function ping() {
-  var xhttp = new XMLHttpRequest();
-  xhttp.onreadystatechange = function() {
-    if (this.readyState == 4 && this.status == 200) {
+**Flag:** FLAG{ThePwr0fTheS3m1}
 
-      parser = new DOMParser();
-      xmlDoc = parser.parseFromString(xhttp.responseText,"text/html");
-      loader = xmlDoc.getElementById("loading");
-
-      if (!loader) {
-        window.location.href = pingUrl;
-      }
-    }
-  };
-  xhttp.open("GET", pingUrl, true);
-  xhttp.send()
-}
-
-setInterval(ping, 2000);
-</script>
-
-</html>
-```
-
-Here we see the code `xhttp.open("GET", pingUrl, true);`.  We can probably use this function to get our cross site scripting running. 
 # 2 Username enumeration
 We have the information that there exists an User with the Password *DarkSide2021*. We now need to find the fitting user to the given password.
 ## Looking at the login post
