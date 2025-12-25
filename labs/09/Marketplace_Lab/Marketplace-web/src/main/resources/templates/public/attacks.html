@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+<head>
+    <title>Marketplace - Attacks</title>
+    <link rel="stylesheet" type="text/css" media="all" th:href="@{/css/marketplace.css}" />
+</head>
+<body>
+    <div id="header">
+        <h1>Attack Page</h1>
+        <p class="redItalicText" th:text="${message}" />
+    </div>
+
+    <div id="attacksList">
+        <table class="table-data">
+            <thead>
+            <tr>
+                <th>#</th>
+                <th>Attack and Secure Behavior</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>1</td>
+                <td>As <i>daisy</i>, try to delete the product with ID 2, which is owned by luke. Secure behavior: 403 response.</td>
+                <td>
+                    <form th:action="@{'/admin/deleteproduct/2'}" method="post">
+                    <button type="submit" class="btn btn-red">Do Attack 1</button></form>
+                </td>
+            </tr>
+            <tr>
+                <td>2</td>
+                <td>As <i>daisy</i>, try to delete the purchase with ID 1. Secure behavior: 403 response.</td>
+                <td>
+                    <form th:action="@{'/admin/deletepurchase/1'}" method="post">
+                    <button type="submit" class="btn btn-red">Do Attack 2</button></form>
+                </td>
+            </tr>
+            <tr>
+                <td>3</td>
+                <td>As <i>daisy</i>, try to access <i>/admin/addproduct</i> over HTTP. Secure behavior: Redirection to HTTPS.</td>
+                <td>
+                    <form action="http://localhost:8080/admin/addproduct" method="get">
+                        <button type="submit" class="btn btn-red">Do Attack 3</button></form>
+                </td>
+            </tr>
+            <tr>
+                <td>4</td>
+                <td>As <i>alice</i>, try to access <i>/admin/addproduct</i>. Secure behavior: 403 response.</td>
+                <td>
+                    <form th:action="@{'/admin/addproduct'}" method="get">
+                        <button type="submit" class="btn btn-red">Do Attack 4</button></form>
+                </td>
+            </tr>
+            <tr>
+                <td>5</td>
+                <td>Without being logged in, try to access <i>/admin/accountsettings</i>. Secure behavior: Redirection to login page.</td>
+                <td>
+                    <form th:action="@{'/admin/accountsettings'}" method="get">
+                        <button type="submit" class="btn btn-red">Do Attack 5</button></form>
+                </td>
+            </tr>
+            <tr>
+                <td>6</td>
+                <td>Without being logged in, try to access <i>POST /public/login</i> directly, using <i>a</i> for username and password. Secure behavior: 403 response.</td>
+                <td>
+                    <form th:action="@{/public/login}" method="post">
+                        <input type="hidden" name="username" value="a" />
+                        <input type="hidden" name="password" value="a" />
+                        <button type="submit" class="btn btn-red">Do Attack 6</button></form>
+                </td>
+            </tr>
+
+            </tbody>
+        </table>
+    </div>
+
+</body>
+</html>

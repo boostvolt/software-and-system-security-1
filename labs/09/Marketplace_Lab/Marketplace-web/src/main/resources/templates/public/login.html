@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Marketplace - Login</title>
+    <link rel="stylesheet" type="text/css" media="all" th:href="@{/css/marketplace.css}" />
+</head>
+<body>
+
+<div id="header">
+    <h1>Login</h1>
+    <p class="redItalicText" th:if="${param.blocked}">You are temporarily blocked due to multiple failed login attempts. Please try again in one minute.</p>
+    <p class="redItalicText" th:if="${param.error}">Invalid username or password, please try again.</p>
+</div>
+
+<div id="loginForm" class="inputForm">
+    <form th:action="@{/public/login-check}" th:object="${credentials}" method="post">
+        <table>
+            <tr>
+                <td>Username:</td>
+                <td><input type="text" th:field="*{username}" /></td>
+                <td class="redItalicText" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></td>
+            </tr>
+            <tr>
+                <td>Password:</td>
+                <td><input type="password" th:field="*{password}" /></td>
+                <td class="redItalicText" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td><button type="submit" class="btn btn-blue">Login</button></td>
+            </tr>
+        </table>
+    </form>
+</div>
+
+<div id="navigation">
+    <form th:action="@{/public/products}">
+        <button type="submit" class="btn btn-gray">Return to Products Page</button>
+    </form>
+</div>
+</body>
+</html>

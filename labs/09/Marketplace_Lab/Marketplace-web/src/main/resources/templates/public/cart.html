@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Marketplace - Cart</title>
+    <link rel="stylesheet" type="text/css" media="all" th:href="@{/css/marketplace.css}" />
+</head>
+<body>
+<div id="header">
+    <h1>Your Shopping Cart</h1>
+</div>
+
+<div id="cartEmpty" th:if="${products.isEmpty}">
+    <p>Your cart is empty.</p>
+</div>
+
+<div id="cartContent" th:unless="${products.isEmpty()}">
+    <table class="table-data">
+        <thead>
+        <tr>
+            <th>Description</th>
+            <th>Price (CHF)</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="product : ${products}">
+            <td th:text="${product.description}"></td>
+            <td th:text="${product.price}"></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<div id="navigation">
+    <form th:action="@{/public/products}">
+        <button type="submit" class="btn btn-gray">Return to Products Page</button>
+    </form>
+    <form th:action="@{/public/checkout}">
+        <button type="submit" class="btn btn-gray">Checkout</button>
+    </form>
+</div>
+</body>
+</html>

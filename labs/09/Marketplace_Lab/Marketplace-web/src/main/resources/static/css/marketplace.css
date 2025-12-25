@@ -1,0 +1,116 @@
+body {
+    background-color: #f4f7f6;
+    font-family: 'Arial', sans-serif;
+    color: #333;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+h1 {
+    margin: 20px 0;
+    font-size: 28px;
+    font-weight: bold;
+    color: #005a8d;
+    text-align: center;
+}
+
+p {
+    text-align: center;
+}
+
+.boldItalicText {
+    font-weight: bold;
+    font-style: italic;
+}
+
+.redItalicText {
+    color: red;
+    font-style: italic;
+}
+
+.inputForm {
+    //margin: 20px 0;
+    padding: 15px;
+    background: #eaf8ff;
+    border-radius: 8px;
+    text-align: center;
+}
+
+input[type="text"],
+input[type="password"] {
+    width: 300px;
+    padding: 8px;
+    border: 1px solid #bbb;
+    border-radius: 5px;
+}
+
+button:hover {
+    opacity: 0.85;
+}
+
+.btn {
+    padding: 8px 15px;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.btn-blue {
+    //background-color: #005f86;
+    background-color: #0077b6;
+    color: white;
+}
+
+.btn-gray {
+    background-color: #6c757d;
+    color: white;
+}
+
+.btn-green {
+    background-color: #3a8054;
+    color: white;
+}
+
+.btn-red {
+    background-color: #a33f3f;
+    color: white;
+}
+
+td {
+    text-align: left;
+}
+
+.table-data {
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+.table-data th, .table-data td {
+    padding: 10px;
+    text-align: left;
+    border: 1px solid #ddd;
+}
+
+.table-data th {
+    background-color: #0077b6;
+    color: white;
+}
+
+.table-data tr:nth-child(odd) {
+    background-color: #f1f9ff;
+}
+
+.table-data tr:hover {
+    background-color: #dfe9f3;
+}
+
+#navigation {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}

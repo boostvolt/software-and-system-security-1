@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <title>Marketplace - Admin Area</title>
+    <link rel="stylesheet" type="text/css" media="all" th:href="@{/css/marketplace.css}" />
+</head>
+<body>
+    <div id="header">
+        <h1>Admin Area</h1>
+        <p class="redItalicText" th:text="${message}" />
+    </div>
+
+    <div id="purchaseList" sec:authorize="hasAnyRole('MARKETING', 'SALES')">
+        <p th:if="${purchases.isEmpty}">No purchases available.</p>
+        <p th:unless="${purchases.isEmpty}">Purchases:</p>
+        <table th:unless="${purchases.isEmpty}" class="table-data">
+            <thead>
+            <tr>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Credit Card Number</th>
+                <th>Total Price (CHF)</th>
+                <th sec:authorize="hasRole('SALES')"></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="purchase : ${purchases}">
+                <td th:text="${purchase.firstname}"></td>
+                <td th:text="${purchase.lastname}"></td>
+                <td th:text="${purchase.creditCardNumber}"></td>
+                <td th:text="${purchase.totalPrice}"></td>
+                <td sec:authorize="hasRole('SALES')">
+                    <form th:action="@{'/admin/deletepurchase/' + ${purchase.purchaseID}}" method="post">
+                        <button type="submit" class="btn btn-blue">Delete Purchase</button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div id="productList" sec:authorize="hasRole('PRODUCTMANAGER')">
+        <p th:if="${products.isEmpty}">No products available.</p>
+        <p th:unless="${products.isEmpty}">Products:</p>
+        <table th:unless="${products.isEmpty}" class="table-data">
+            <thead>
+            <tr>
+                <th>Description</th>
+                <th>Price (CHF)</th>
+                <th>Username</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="product : ${products}">
+                <td th:text="${product.description}"></td>
+                <td th:text="${product.price}"></td>
+                <td th:text="${product.username}"></td>
+                <td>
+                    <form th:if="${product.username == username}" th:action="@{'/admin/deleteproduct/' + ${product.productID}}" method="post">
+                        <button type="submit" class="btn btn-blue">Delete Product</button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div sec:authorize="!hasAnyRole('MARKETING', 'SALES', 'PRODUCTMANAGER')">
+        <p>Your role does not provide access to special functions in the admin area.</p>
+    </div>
+
+    <div id="navigation">
+        <form th:action="@{/public/products}">
+            <button type="submit" class="btn btn-gray">Return to Products Page</button>
+        </form>
+        <form sec:authorize="hasRole('PRODUCTMANAGER')" th:action="@{/admin/addproduct}">
+            <button type="submit" class="btn btn-gray">Add Product</button>
+        </form>
+        <form th:action="@{/admin/accountsettings}">
+            <button type="submit" class="btn btn-gray">Account Settings</button>
+        </form>
+        <form th:action="@{/logout}" method="post">
+            <button type="submit" class="btn btn-gray">Logout</button>
+        </form>
+    </div>
+</body>
+</html>

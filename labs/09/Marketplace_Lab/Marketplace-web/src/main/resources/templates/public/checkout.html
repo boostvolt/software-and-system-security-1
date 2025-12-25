@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Marketplace - Checkout</title>
+    <link rel="stylesheet" type="text/css" media="all" th:href="@{/css/marketplace.css}" />
+</head>
+<body>
+<div id="header">
+    <h1>Checkout</h1>
+</div>
+
+<div id="checkoutHeader">
+    <p th:if="${products.isEmpty}">Your cart is empty, so you cannot purchase anything.</p>
+    <p th:unless="${products.isEmpty}">Please provide the following information to complete your purchase:</p>
+</div>
+
+<div id="checkoutData" class="inputForm" th:unless="${products.isEmpty}">
+    <form th:action="@{/public/purchase}" th:object="${purchase}" method="post">
+        <table>
+            <tr>
+                <td>First name:</td>
+                <td><input type="text" th:field="*{firstname}" /></td>
+                <td class="redItalicText" th:if="${#fields.hasErrors('firstname')}" th:errors="*{firstname}"></td>
+            </tr>
+            <tr>
+                <td>Last name:</td>
+                <td><input type="text" th:field="*{lastname}" /></td>
+                <td class="redItalicText" th:if="${#fields.hasErrors('lastname')}" th:errors="*{lastname}"></td>
+            </tr>
+            <tr>
+                <td>Credit card number:</td>
+                <td><input type="text" th:field="*{creditCardNumber}" /></td>
+                <td class="redItalicText" th:if="${#fields.hasErrors('creditCardNumber')}" th:errors="*{creditCardNumber}"></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td><button type="submit" class="btn btn-blue">Complete Purchase</button></td>
+            </tr>
+        </table>
+    </form>
+</div>
+
+<div id="navigation">
+    <form th:action="@{/public/products}">
+        <button type="submit" class="btn btn-gray">Return to Products Page</button>
+    </form>
+    <form th:action="@{/public/cart}">
+        <button type="submit" class="btn btn-gray">Show Cart</button>
+    </form>
+</div>
+</body>
+</html>

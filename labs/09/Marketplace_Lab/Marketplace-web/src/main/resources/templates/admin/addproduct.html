@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Marketplace - Add Product</title>
+    <link rel="stylesheet" type="text/css" media="all" th:href="@{/css/marketplace.css}" />
+</head>
+<body>
+<div id="header">
+    <h1>Add Product</h1>
+</div>
+
+<div id="productData" class="inputForm">
+    <form th:action="@{/admin/saveproduct}" th:object="${product}" method="post">
+        <table>
+            <tr>
+                <td>Description:</td>
+                <td><input type="text" th:field="*{description}" /></td>
+                <td class="redItalicText" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></td>
+            </tr>
+            <tr>
+                <td>Price:</td>
+                <td><input type="text" th:field="*{price}" /></td>
+                <td class="redItalicText" th:if="${#fields.hasErrors('price')}" th:errors="*{price}"></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td><button type="submit" class="btn btn-blue">Save Product</button></td>
+            </tr>
+        </table>
+    </form>
+</div>
+
+<div id="navigation">
+    <form th:action="@{/admin/admin}">
+        <button type="submit" class="btn btn-gray">Return to Admin Area</button>
+    </form>
+</div>
+</body>
+</html>

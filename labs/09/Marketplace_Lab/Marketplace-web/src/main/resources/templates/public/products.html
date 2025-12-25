@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Marketplace</title>
+    <link rel="stylesheet" type="text/css" media="all" th:href="@{/css/marketplace.css}" />
+</head>
+<body>
+
+<div id="header">
+    <h1>Welcome to Marketplace Lab</h1>
+    <p class="redItalicText" th:text="${message}" />
+</div>
+
+<div id="productSearch" class="inputForm">
+    <form th:action="@{/public/products}" th:object="${productSearch}">
+        <table>
+            <tr>
+                <td><input type="text" placeholder="Search for products..."
+                           th:field="*{description}" /></td>
+                <td><button type="submit" class="btn btn-blue">Search</button></td>
+                <td class="redItalicText" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></td>
+            </tr>
+        </table>
+    </form>
+</div>
+
+<div id="searchResults">
+    <p>Search results for: <span class="boldItalicText" th:text="${productSearch.description}"/></p>
+</div>
+
+<div id="productList">
+    <p th:if="${products.isEmpty}">No products match your search.</p>
+    <table th:unless="${products.isEmpty}" class="table-data">
+        <thead>
+        <tr>
+            <th>Description</th>
+            <th>Price (CHF)</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="product : ${products}">
+            <td th:text="${product.description}"></td>
+            <td th:text="${product.price}"></td>
+            <td>
+                <form th:action="@{'/public/addtocart/' + ${product.productID}}" method="post">
+                    <button type="submit" class="btn btn-blue">Add to Cart</button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<div id="navigation">
+    <form th:action="@{/public/cart}">
+        <button type="submit" class="btn btn-gray">Show Cart</button>
+    </form>
+    <form th:action="@{/public/checkout}">
+        <button type="submit" class="btn btn-gray">Checkout</button>
+    </form>
+    <form th:action="@{/admin/admin}">
+        <button type="submit" class="btn btn-gray">Admin Area</button>
+    </form>
+</div>
+</body>
+</html>

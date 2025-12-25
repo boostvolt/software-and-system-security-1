@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Marketplace - Account Settings</title>
+    <link rel="stylesheet" type="text/css" media="all" th:href="@{/css/marketplace.css}" />
+</head>
+<body>
+<div id="header">
+    <h1>Account Settings</h1>
+    <p class="redItalicText" th:text="${message}" />
+</div>
+
+<div id="accountSettingsHeader">
+    <p>Change password of user <span class="boldItalicText" th:text="${username}"/></p>
+</div>
+
+<div id="changePasswordData" class="inputForm">
+    <form th:action="@{/admin/changepassword}" th:object="${changePassword}" method="post">
+        <table>
+            <tr>
+                <td>Old password:</td>
+                <td><input type="password" th:field="*{oldPassword}" /></td>
+                <td class="redItalicText" th:if="${#fields.hasErrors('oldPassword')}" th:errors="*{oldPassword}"></td>
+            </tr>
+            <tr>
+                <td>New password:</td>
+                <td><input type="password" th:field="*{newPassword}" /></td>
+                <td class="redItalicText" th:if="${#fields.hasErrors('newPassword')}" th:errors="*{newPassword}"></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td><button type="submit" class="btn btn-blue">Change Password</button></td>
+            </tr>
+        </table>
+    </form>
+</div>
+
+<div id="navigation">
+    <form th:action="@{/admin/admin}">
+        <button type="submit" class="btn btn-gray">Return to Admin Area</button>
+    </form>
+</div>
+</body>
+</html>
