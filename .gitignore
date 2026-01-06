@@ -1,18 +1,8 @@
 # IDE
 .idea/
-.vscode/
 *.iml
-
-# Claude
-.claude/
 
 # Build artifacts
 target/
 *.class
 
-# OS files
-.DS_Store
-Thumbs.db
-
-# Logs
-*.log
