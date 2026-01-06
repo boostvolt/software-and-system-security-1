@@ -655,4 +655,4 @@ In this lab, you can get 2 Lab Points. To get them, you must demonstrate that yo
 
 ## Demonstration Video
 
-A screen recording demonstrating the successful implementation and testing of all security fixes is available: [ScreenRecording.mp4](ScreenRecording.mp4)
+A screen recording demonstrating the successful implementation and testing of all security fixes is available: [Screen Recording](screen-recording.mp4)
