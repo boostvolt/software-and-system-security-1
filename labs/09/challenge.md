@@ -69,11 +69,11 @@ The following steps assume that you are using IntelliJ, which is installed on th
 
 As you have seen above, the `Marketplace_Lab` project consists of three modules. This is mainly done to re-use code that is used by both the web application and the REST API. The three modules contain the following:
 
-| Module | Contents |
-|--------|----------|
+| Module                 | Contents                                                                                                                                                             |
+| ---------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Marketplace-common** | Everything that is used by both the web application and the REST API (common config classes, model classes, repository classes, service classes, validation classes) |
-| **Marketplace-web** | Everything that is specific for the web application (web application-specific config and controller classes, main class, templates and application.properties) |
-| **Marketplace-rest** | Everything that is REST API specific (REST API-specific config, controller and service classes, main class and application.properties) |
+| **Marketplace-web**    | Everything that is specific for the web application (web application-specific config and controller classes, main class, templates and application.properties)       |
+| **Marketplace-rest**   | Everything that is REST API specific (REST API-specific config, controller and service classes, main class and application.properties)                               |
 
 ---
 
@@ -93,15 +93,15 @@ Finally, the lab points section at the end contains the tests your program must 
 
 The following table lists the available users, their passwords, and the roles they get after successful login. For instance, user `alice` has the password `rabbit` and gets the role `SALES` after successful login. The passwords are shown here in plaintext, but they are stored securely in the database (using bcrypt, as discussed in the lecture).
 
-| Username | Password | Role |
-|----------|----------|------|
-| alice | rabbit | SALES |
-| bob | patrick | BURGERMAN |
-| daisy | yellow | PRODUCTMANAGER |
-| john | wildwest | SALES |
-| luke | force | PRODUCTMANAGER |
-| robin | arrow | MARKETING |
-| snoopy | woodstock | MARKETING |
+| Username | Password  | Role           |
+| -------- | --------- | -------------- |
+| alice    | rabbit    | SALES          |
+| bob      | patrick   | BURGERMAN      |
+| daisy    | yellow    | PRODUCTMANAGER |
+| john     | wildwest  | SALES          |
+| luke     | force     | PRODUCTMANAGER |
+| robin    | arrow     | MARKETING      |
+| snoopy   | woodstock | MARKETING      |
 
 ---
 
@@ -118,6 +118,7 @@ Depending on the role of the user, the admin area should appear as follows:
 #### Role SALES (role MARKETING is similar, but does not display the Delete Purchase buttons):
 
 Shows the **Admin Area** with:
+
 - Purchases table with columns: First Name, Last Name, Credit Card Number, Total Price (CHF)
 - Delete Purchase buttons for each row
 - Buttons: Return to Products Page, Account Settings, Logout
@@ -125,6 +126,7 @@ Shows the **Admin Area** with:
 #### Role PRODUCTMANAGER:
 
 Shows the **Admin Area** with:
+
 - Products table with columns: Description, Price (CHF), Username
 - Delete Product buttons only for the current user's own products
 - Buttons: Return to Products Page, Add Product, Account Settings, Logout
@@ -132,6 +134,7 @@ Shows the **Admin Area** with:
 #### Role BURGERMAN (any other role than MARKETING / SALES / PRODUCTMANAGER):
 
 Shows the **Admin Area** with:
+
 - Message: "Your role does not provide access to special functions in the admin area."
 - Buttons: Return to Products Page, Account Settings, Logout
 
@@ -142,6 +145,7 @@ Do the following to implement this functionality:
 1. **Extend method `securityFilterChain`** in class `SecurityConfig` (in Marketplace-web) to grant the two new roles `PRODUCTMANAGER` and `BURGERMAN` access to resources below `/admin/`.
 
 2. **Extend method `adminPage`** in class `AdminController` (in Marketplace-web) so it sets two model attributes if the role of the current user is `PRODUCTMANAGER`:
+
    - The first attribute should have name `products` and contains a list of all products in the database. To get them, class `ProductService` (in Marketplace-common) provides a method `findAll`.
    - The second attribute should have name `username` and contains the username of the current user. To get this name, class `UtilityService` (in Marketplace-common) provides a method.
    - Note that `UtilityService` also contains a method to get the role of the current user, which is used at the beginning of method `adminPage` to distinguish between different roles.
@@ -169,6 +173,7 @@ The behavior should be as follows:
 1. Clicking the **Add Product** button shows `template/admin/addproduct.html`.
 
 2. Entering invalid data for the input fields and clicking **Save Product** results in validation errors being displayed:
+
    - Description: "Please insert a valid description (10-100 characters: letters / digits / - / , / ')."
    - Price: "Please insert a valid price (between 0 and 999999.99, with at most two decimal places)."
 
@@ -183,6 +188,7 @@ Do the following to implement this functionality:
 2. **Method `addProductPage`** in class `AdminController` to get to the Add Product page is already provided. Inspect it so you know how it works. Next, **complete `template/admin/addproduct.html`**. This should be done similar as in `template/public/checkout.html`.
 
 3. **Add Bean Validation annotations**¹ to the instance variables `description` and `price` in class `Product` to enforce the restrictions described above and to make sure that only valid products are inserted into the database. Using the Bean Validation annotations is done similar as in class `Purchase`:
+
    - The `description` can be handled with `@NotNull` and `@Pattern`.
    - For the `price`, it's best to combine `@NotNull`, `@PositiveOrZero` and `@Digits` (simply use all of them above the attribute `price`, which enforces them all).
    - Make sure to use the same validation error messages as illustrated in the screenshot.
@@ -211,6 +217,7 @@ Your task is to complete the functionality to change the password. Do the follow
 1. Looking at the screenshot above, you should realize that this password change is designed in an **insecure way** (and with this, we don't mean the too simplistic requirements for the new password, and also not the fact the user doesn't have to insert the new password twice (which would be reasonable to do, but which is omitted here)). **Identify the issue** and start fixing it by adapting `template/admin/accountsettings.html` and the data class `ChangePassword`. When doing these extensions, make sure to consider Bean Validation for any data entered by the user.
 
 2. Next, **extend the code in method `changePassword`** in class `UserService` so that it allows to change the password in a secure way. If the password change is successful, the method returns `true`, otherwise `false`. Take the following into account when extending the method:
+
    - The method already contains the code to get the correct `User` entity from the database and to save the modified entity in the database (so that the new bcrypt hash corresponding to the new password is saved).
    - To complete the implementation, use object `passwordEncoder` that is injected into `UserService`. This object is of type `BCryptPasswordEncoder`, see class `CommonSecurityConfig` (in marketplace-common), and provides methods that you can use to complete this task².
 
@@ -237,6 +244,7 @@ So far, there's no input validation done during login. Security-wise, one should
 This high degree of automation during the last step is great as it means that less code must be implemented, but it also means that it's not possible to integrate input validation. In the following, the program will be extended so that it supports input validation during login.
 
 As a result of this extension, login should behave as follows if the username or the password do not fulfill the criteria with respect to character length:
+
 - Username: "Please insert a valid username (between 3 and 12 characters)."
 - Password: "Please insert a valid password (between 4 and 20 characters)."
 
@@ -260,18 +268,20 @@ Verify that input validation indeed works correctly. However, the current implem
 
 > **Question:** Do you have an idea why this is so? Write your reasoning into the following box.
 >
-> *(Space for answer)*
+> _(Space for answer)_
 
 ### Testing with Burp Suite
 
 Let's check if it is indeed possible to circumvent input validation. Start an interceptor proxy. On the VM, you can use **Burp Suite** for this.
 
 **Burp Suite Configuration:**
+
 1. Per default Burp Suite listens on port 8080, which is also used by the Marketplace web application.
 2. After having started Burp Suite, select the tab **Proxy** and next **Proxy settings**.
 3. Then, select the configured row under **Proxy listeners** and use the **Edit** button to change the port from `8080` to `8008`, and mark the **Running** checkbox.
 
 **Firefox Configuration:**
+
 1. Open the **Settings** in Firefox, select **General**, then scroll down to **Network Settings** and click **Settings**.
 2. In the opening Connection Settings window, select **Manual proxy configuration** and enter `localhost` and port `8008` under HTTP proxy, and mark the checkbox **Also use this proxy for HTTPS**.
 3. In addition, remove all entries from the **No Proxy for** box in case there are entries listed.
@@ -280,6 +290,7 @@ Let's check if it is indeed possible to circumvent input validation. Start an in
    - Enter `localhost` in the search field and double-click on the line `network.proxy.allow_hijacking_localhost` to set it to `true`.
 
 **Performing the Test:**
+
 1. Use the browser to navigate to the login page.
 2. Next, turn on the interceptor mode in Burp Suite.
 3. Go back to the browser, enter exactly one character for username and password and click Login.
@@ -375,12 +386,14 @@ Per default, Spring automatically handles failed and successful logins by redire
 Two classes that implement these interfaces are already existing: `CustomAuthFailureHandler` and `CustomAuthSuccessHandler`. You must complete these two classes:
 
 **CustomAuthFailureHandler:**
+
 - Complete method `onAuthenticationFailure`. This method is called whenever login has failed.
 - Use the public methods of class `LoginThrottlingService` to get the intended login throttling behavior.
 - Note that objects of the classes `LoginThrottlingService` and `UserService` are already injected, so you can use them.
 - At the end, the user is redirected to the login page, so we have the same behavior as before.
 
 **CustomAuthSuccessHandler:**
+
 - Complete method `onAuthenticationSuccess`. This method is called whenever login has succeeded.
 - Use the public methods of class `LoginThrottlingService` to get the intended login throttling behavior.
 - Here, an object of the class `LoginThrottlingService` is already injected.
@@ -487,7 +500,20 @@ To do this, you have to complete the REST API controller class `AdminController`
 - Sends JSON objects in the following form to the client:
 
 ```json
-[{"productID":1,"description":"DVD Life of Brian - used, some scratches but still works","price":5.95,"username":"daisy"},{"productID":2,"description":"Ferrari F50 - red, 43000 km, no accidents","price":250000.00,"username":"luke"}]
+[
+  {
+    "productID": 1,
+    "description": "DVD Life of Brian - used, some scratches but still works",
+    "price": 5.95,
+    "username": "daisy"
+  },
+  {
+    "productID": 2,
+    "description": "Ferrari F50 - red, 43000 km, no accidents",
+    "price": 250000.0,
+    "username": "luke"
+  }
+]
 ```
 
 - URL: `rest/admin/products`
@@ -498,7 +524,7 @@ To do this, you have to complete the REST API controller class `AdminController`
 - The new product is included as JSON data in the request, using the following form:
 
 ```json
-{"description":"Super Vulnerability Scanner","price":9999.95}
+{ "description": "Super Vulnerability Scanner", "price": 9999.95 }
 ```
 
 - URL: `rest/admin/products`
@@ -557,6 +583,7 @@ Note that you don't have to deal with authentication, as this functionality was 
 - If a non-authenticated user or a user with a role other than `PRODUCTMANAGER` tries to access the resource, the behavior should be the same as with GET requests above and should work out of the box.
 
 > **Before you continue**, check the following:
+>
 > - When running the tests in project `Marketplace_Lab-REST-Test`, all tests should show **PASSED** (except the login throttling tests, as login throttling has not been implemented yet for the REST API).
 
 ### 9.2 Limiting Online Password Guessing Attacks
@@ -572,6 +599,7 @@ Finally, make sure that the REST API cannot be abused for online password guessi
 - If the provided username is blocked, a **400 response** with JSON content `{"error":"You are temporarily blocked due to multiple failed login attempts. Please try again in one minute."}` should be sent to the client. You can do this by throwing an `InvalidParameterException` with the desired error message.
 
 > **Before you continue**, check the following:
+>
 > - When running the tests in project `Marketplace_Lab-REST-Test`, all tests should show **PASSED**.
 
 ---
@@ -580,12 +608,12 @@ Finally, make sure that the REST API cannot be abused for online password guessi
 
 In this lab, you can get **6 Lab Points**. To get them, you must demonstrate that your extended Marketplace application runs according to the specifications and passes the tests listed in the table below.
 
-| Task | Points |
-|------|--------|
-| Task 1: Extending Admin Area (see Section 6) | 2 points |
-| Task 2: Login Input Validation and Limiting Online Password Guessing Attacks (see Section 7) | 1 point |
-| Task 3: Encrypting Credit Card Numbers (see Section 8) | 1 point |
-| Task 4: REST API (see Section 9) | 2 points |
+| Task                                                                                         | Points   |
+| -------------------------------------------------------------------------------------------- | -------- |
+| Task 1: Extending Admin Area (see Section 6)                                                 | 2 points |
+| Task 2: Login Input Validation and Limiting Online Password Guessing Attacks (see Section 7) | 1 point  |
+| Task 3: Encrypting Credit Card Numbers (see Section 8)                                       | 1 point  |
+| Task 4: REST API (see Section 9)                                                             | 2 points |
 
 ### Test Checklist
 
@@ -593,57 +621,58 @@ To get the points, your application must pass the following tests:
 
 #### Task 1: Extending Admin Area
 
-| Test | Passed |
-|------|--------|
-| If a non-authenticated user clicks the Admin Area button, the user is redirected to the login page. | ☐ |
-| Logging in with alice/rabbit shows the purchases. | ☐ |
-| Logging in with bob/patrick shows an «empty» Admin Area. | ☐ |
-| Logging in with daisy/yellow shows the products and the Add product button. | ☐ |
-| The Delete Product button is only visible in the rows that correspond to daisy's products. | ☐ |
-| Deleting a product as daisy that is owned by luke results in a 403 response. You can do this test with button **Do Attack 1** on the attack page. | ☐ |
-| Deleting a purchase as daisy results in a 403 response. You can do this test with button **Do Attack 2** on the attack page. | ☐ |
-| Deleting a product as daisy deletes the product. | ☐ |
-| When daisy enters a new product, the validation rules work correctly, and appropriate error messages are shown. | ☐ |
-| Accessing /admin/addproduct over HTTP (port 8080) and as daisy results in a redirection to HTTPS. You can do this test with button **Do Attack 3** on the attack page. | ☐ |
-| Accessing /admin/addproduct as alice results in a 403 response. You can do this with button **Do Attack 4** on the attack page. | ☐ |
-| Changing the password of a user works and is designed in a secure way. | ☐ |
-| If a non-authenticated user accesses /admin/accountsettings, the user is redirected to the login page. You can do this test with button **Do Attack 5** on the attack page. | ☐ |
+| Test                                                                                                                                                                        | Passed |
+| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ |
+| If a non-authenticated user clicks the Admin Area button, the user is redirected to the login page.                                                                         | ☐      |
+| Logging in with alice/rabbit shows the purchases.                                                                                                                           | ☐      |
+| Logging in with bob/patrick shows an «empty» Admin Area.                                                                                                                    | ☐      |
+| Logging in with daisy/yellow shows the products and the Add product button.                                                                                                 | ☐      |
+| The Delete Product button is only visible in the rows that correspond to daisy's products.                                                                                  | ☐      |
+| Deleting a product as daisy that is owned by luke results in a 403 response. You can do this test with button **Do Attack 1** on the attack page.                           | ☐      |
+| Deleting a purchase as daisy results in a 403 response. You can do this test with button **Do Attack 2** on the attack page.                                                | ☐      |
+| Deleting a product as daisy deletes the product.                                                                                                                            | ☐      |
+| When daisy enters a new product, the validation rules work correctly, and appropriate error messages are shown.                                                             | ☐      |
+| Accessing /admin/addproduct over HTTP (port 8080) and as daisy results in a redirection to HTTPS. You can do this test with button **Do Attack 3** on the attack page.      | ☐      |
+| Accessing /admin/addproduct as alice results in a 403 response. You can do this with button **Do Attack 4** on the attack page.                                             | ☐      |
+| Changing the password of a user works and is designed in a secure way.                                                                                                      | ☐      |
+| If a non-authenticated user accesses /admin/accountsettings, the user is redirected to the login page. You can do this test with button **Do Attack 5** on the attack page. | ☐      |
 
 #### Task 2: Login Input Validation and Limiting Online Password Guessing Attacks
 
-| Test | Passed |
-|------|--------|
-| Input validation during login works as specified. | ☐ |
-| POST requests to /public/login are not processed and result in a 403 response. You can do this test with button **Do Attack 6** on the attack page, as this performs the same test that you did before by using Burp Suite: It sends a POST request to /public/login using only one character for username and password. | ☐ |
-| Log in with the same user four times in a row using a wrong password. Three times, you should get the message "Invalid username or password, please try again." After the fourth login attempt, you should get the message "User xyz is temporarily blocked, try again in one minute." | ☐ |
-| Log in right again with the same user, but using the correct password. The user should still be blocked and get the message "You are temporarily blocked due to multiple failed login attempts. Please try again in one minute." | ☐ |
-| Wait more than 60 seconds and log in again with the same user, with a wrong password. You should get the message "Invalid username or password, please try again." | ☐ |
-| Log in right again with the same user, but using the correct password. You should get the message "You are temporarily blocked due to multiple failed login attempts. Please try again in one minute." | ☐ |
-| Wait more than 60 seconds and log in again with the same user, with the correct password. The login should be successful. | ☐ |
-| Log in four times (or more) with a non-existing username. You should get the message "Invalid username or password, please try again." every time, but never the message that the user is blocked. | ☐ |
+| Test                                                                                                                                                                                                                                                                                                                     | Passed |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------ |
+| Input validation during login works as specified.                                                                                                                                                                                                                                                                        | ☐      |
+| POST requests to /public/login are not processed and result in a 403 response. You can do this test with button **Do Attack 6** on the attack page, as this performs the same test that you did before by using Burp Suite: It sends a POST request to /public/login using only one character for username and password. | ☐      |
+| Log in with the same user four times in a row using a wrong password. Three times, you should get the message "Invalid username or password, please try again." After the fourth login attempt, you should get the message "User xyz is temporarily blocked, try again in one minute."                                   | ☐      |
+| Log in right again with the same user, but using the correct password. The user should still be blocked and get the message "You are temporarily blocked due to multiple failed login attempts. Please try again in one minute."                                                                                         | ☐      |
+| Wait more than 60 seconds and log in again with the same user, with a wrong password. You should get the message "Invalid username or password, please try again."                                                                                                                                                       | ☐      |
+| Log in right again with the same user, but using the correct password. You should get the message "You are temporarily blocked due to multiple failed login attempts. Please try again in one minute."                                                                                                                   | ☐      |
+| Wait more than 60 seconds and log in again with the same user, with the correct password. The login should be successful.                                                                                                                                                                                                | ☐      |
+| Log in four times (or more) with a non-existing username. You should get the message "Invalid username or password, please try again." every time, but never the message that the user is blocked.                                                                                                                       | ☐      |
 
 #### Task 3: Encrypting Credit Card Numbers
 
-| Test | Passed |
-|------|--------|
-| Make two purchases using the credit card number 1111 2222 3333 4444 both times. Then, use the mysql command line tool and enter `SELECT * FROM Purchase;` to check that credit card numbers are stored in encrypted form in the database. The entries should look similar as below (the individual entries should all be different due to different IVs): | ☐ |
+| Test                                                                                                                                                                                                                                                                                                                                                      | Passed |
+| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ |
+| Make two purchases using the credit card number 1111 2222 3333 4444 both times. Then, use the mysql command line tool and enter `SELECT * FROM Purchase;` to check that credit card numbers are stored in encrypted form in the database. The entries should look similar as below (the individual entries should all be different due to different IVs): | ☐      |
 
 Example encrypted values:
+
 ```
 fGd10a46VT4C99RTtDJZqG0XRa8/oPElDBUcMh3+Qs4qFHS59+DU1CgLS1dqGZZ61+Yp
 p84vqX+tI4C9wlvW3a2VqCw0O3EB/+6FjnriOsqiRPbxw7fJ3orQ04au3IFsQXqJFBcB
 4NeQvkHbNbjUx6AS8bB7ZAHWZLphrY1JzkyPredw4uKd/JbcFqTLLPlBFGjpA4JsLv76
 ```
 
-| Test | Passed |
-|------|--------|
-| Accessing the Admin Area as user alice (or robin) shows the credit card numbers in plaintext. | ☐ |
+| Test                                                                                          | Passed |
+| --------------------------------------------------------------------------------------------- | ------ |
+| Accessing the Admin Area as user alice (or robin) shows the credit card numbers in plaintext. | ☐      |
 
 #### Task 4: REST API
 
-| Test | Passed |
-|------|--------|
-| When running the tests in project Marketplace_Lab-REST-Test, all tests show **PASSED**. | ☐ |
+| Test                                                                                    | Passed |
+| --------------------------------------------------------------------------------------- | ------ |
+| When running the tests in project Marketplace_Lab-REST-Test, all tests show **PASSED**. | ☐      |
 
 ---
 
