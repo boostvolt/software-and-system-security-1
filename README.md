@@ -11,6 +11,8 @@ Solutions for Hacking-Lab security challenges from the SWS1 module at ZHAW.
 | [03](labs/03/) | SQL Injection (Auth Bypass, Union, Blind), XXE, SSRF |
 | [04](labs/04/) | Command Injection, Username Enumeration, XSS (Stored, DOM, SVG) |
 | [05](labs/05/) | IDOR, Broken Access Control, JWT Exploitation, SSRF, PHP Vulnerabilities |
+| [08](labs/08/) | Content-Type XSS, RCE, WAF Bypass, File Upload, JWT Attacks, CSRF, CORS Misconfiguration |
+| [09](labs/09/) | Spring Security, Access Control, Input Validation, Login Throttling, AES Encryption, REST API Security |
 
 ## Structure
 
